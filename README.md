@@ -1,6 +1,7 @@
 # @tijs/atproto-sessions
 
 [![Test](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml/badge.svg)](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml)
+[![JSR](https://jsr.io/badges/@tijs/atproto-sessions)](https://jsr.io/@tijs/atproto-sessions)
 
 Framework-agnostic session management for AT Protocol applications.
 
