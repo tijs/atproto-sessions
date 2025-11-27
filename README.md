@@ -1,5 +1,7 @@
 # @tijs/atproto-sessions
 
+[![Test](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml/badge.svg)](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml)
+
 Framework-agnostic session management for AT Protocol applications.
 
 Provides encrypted session cookies and mobile Bearer tokens using Iron Session.
