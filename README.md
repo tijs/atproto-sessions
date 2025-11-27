@@ -72,12 +72,12 @@ const newToken = await sessions.refreshBearerToken(`Bearer ${oldToken}`);
 
 #### Constructor Options
 
-| Option         | Type     | Default   | Description                        |
-| -------------- | -------- | --------- | ---------------------------------- |
-| `cookieSecret` | `string` | required  | Min 32 chars for Iron Session      |
-| `cookieName`   | `string` | `"sid"`   | Cookie name for session storage    |
-| `sessionTtl`   | `number` | `604800`  | Session TTL in seconds (7 days)    |
-| `logger`       | `Logger` | no-op     | Optional logger for debugging      |
+| Option         | Type     | Default  | Description                     |
+| -------------- | -------- | -------- | ------------------------------- |
+| `cookieSecret` | `string` | required | Min 32 chars for Iron Session   |
+| `cookieName`   | `string` | `"sid"`  | Cookie name for session storage |
+| `sessionTtl`   | `number` | `604800` | Session TTL in seconds (7 days) |
+| `logger`       | `Logger` | no-op    | Optional logger for debugging   |
 
 #### Methods
 
