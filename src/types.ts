@@ -1,8 +1,10 @@
 /**
- * Logger interface for custom logging implementations
+ * Logger interface for custom logging implementations.
+ * Compatible with oauth-client-deno's Logger interface.
  */
 export interface Logger {
-  log(...args: unknown[]): void;
+  debug(...args: unknown[]): void;
+  info(...args: unknown[]): void;
   warn(...args: unknown[]): void;
   error(...args: unknown[]): void;
 }
@@ -40,8 +42,11 @@ export interface SessionConfig {
 /**
  * Session data stored in the encrypted cookie.
  * Contains user identity and timing information.
+ *
+ * Named CookieSessionData to avoid collision with oauth-client-deno's
+ * SessionData which represents full OAuth session state.
  */
-export interface SessionData {
+export interface CookieSessionData {
   /** User's DID (Decentralized Identifier) */
   did: string;
 
@@ -51,6 +56,11 @@ export interface SessionData {
   /** Timestamp of last access (for session refresh) */
   lastAccessed: number;
 }
+
+/**
+ * @deprecated Use CookieSessionData instead. Will be removed in 1.0.
+ */
+export type SessionData = CookieSessionData;
 
 /**
  * Error types for session operations

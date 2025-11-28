@@ -1,10 +1,10 @@
 import { sealData, unsealData } from "iron-session";
 
 import type {
+  CookieSessionData,
   Logger,
   MobileTokenData,
   SessionConfig,
-  SessionData,
   SessionResult,
 } from "./types.ts";
 import { ConfigurationError } from "./errors.ts";
@@ -20,7 +20,8 @@ const MIN_SECRET_LENGTH = 32;
 
 /** No-op logger for production use */
 const noopLogger: Logger = {
-  log: () => {},
+  debug: () => {},
+  info: () => {},
   warn: () => {},
   error: () => {},
 };
@@ -84,11 +85,11 @@ export class SessionManager {
    */
   async getSessionFromRequest(
     req: Request,
-  ): Promise<SessionResult<SessionData>> {
+  ): Promise<SessionResult<CookieSessionData>> {
     try {
       const cookieHeader = req.headers.get("cookie");
       if (!cookieHeader?.includes(`${this.cookieName}=`)) {
-        this.logger.log("No session cookie found in request");
+        this.logger.debug("No session cookie found in request");
         return {
           data: null,
           error: {
@@ -106,7 +107,7 @@ export class SessionManager {
         ?.substring(cookiePrefix.length);
 
       if (!sessionCookie) {
-        this.logger.log("Session cookie found but could not be parsed");
+        this.logger.debug("Session cookie found but could not be parsed");
         return {
           data: null,
           error: {
@@ -117,11 +118,11 @@ export class SessionManager {
       }
 
       // Unseal session data
-      let sessionData: SessionData;
+      let sessionData: CookieSessionData;
       try {
         sessionData = await unsealData(decodeURIComponent(sessionCookie), {
           password: this.cookieSecret,
-        }) as SessionData;
+        }) as CookieSessionData;
       } catch (unsealError) {
         this.logger.error("Failed to unseal session cookie:", {
           error: unsealError instanceof Error
@@ -151,14 +152,14 @@ export class SessionManager {
         };
       }
 
-      this.logger.log(
+      this.logger.info(
         `Session extracted: DID=${sessionData.did}, created=${
           new Date(sessionData.createdAt).toISOString()
         }`,
       );
 
       // Create refreshed session with updated lastAccessed
-      const refreshedData: SessionData = {
+      const refreshedData: CookieSessionData = {
         did: sessionData.did,
         createdAt: sessionData.createdAt,
         lastAccessed: Date.now(),
@@ -166,7 +167,7 @@ export class SessionManager {
 
       const setCookieHeader = await this.createSession(refreshedData);
 
-      this.logger.log(
+      this.logger.info(
         `Session refreshed for DID: ${sessionData.did}, expires in ${
           Math.round(this.sessionTtl / 86400)
         } days`,
@@ -197,7 +198,7 @@ export class SessionManager {
    * @param data - Session data to store (did, createdAt, lastAccessed)
    * @returns Set-Cookie header string to set on response
    */
-  async createSession(data: SessionData): Promise<string> {
+  async createSession(data: CookieSessionData): Promise<string> {
     const sealedSession = await sealData(data, {
       password: this.cookieSecret,
       ttl: this.sessionTtl,
