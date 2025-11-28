@@ -154,15 +154,19 @@ export class SessionManager {
 
       this.logger.info(
         `Session extracted: DID=${sessionData.did}, created=${
-          new Date(sessionData.createdAt).toISOString()
+          sessionData.createdAt
+            ? new Date(sessionData.createdAt).toISOString()
+            : "N/A (mobile token)"
         }`,
       );
 
       // Create refreshed session with updated lastAccessed
+      // Provide defaults for missing fields (backward compatibility with old mobile tokens)
+      const now = Date.now();
       const refreshedData: CookieSessionData = {
         did: sessionData.did,
-        createdAt: sessionData.createdAt,
-        lastAccessed: Date.now(),
+        createdAt: sessionData.createdAt ?? now,
+        lastAccessed: now,
       };
 
       const setCookieHeader = await this.createSession(refreshedData);
@@ -223,12 +227,24 @@ export class SessionManager {
   /**
    * Seal data into a mobile Bearer token.
    *
+   * Creates a token that is compatible with cookie-based session validation,
+   * so mobile apps can use this token either as a Bearer token or as a cookie value.
+   *
    * @param data - Data to seal (typically just { did })
    * @returns Sealed token string
    */
   async sealToken(data: MobileTokenData): Promise<string> {
-    return await sealData(data, {
+    // Include createdAt and lastAccessed for cookie compatibility
+    // This allows mobile tokens to work as cookie values
+    const now = Date.now();
+    const sessionData: CookieSessionData = {
+      did: data.did,
+      createdAt: now,
+      lastAccessed: now,
+    };
+    return await sealData(sessionData, {
       password: this.cookieSecret,
+      ttl: this.sessionTtl,
     });
   }
 

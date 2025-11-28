@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-11-28
+
+### Fixed
+
+- **Mobile token cookie compatibility**: `sealToken` now produces tokens that
+  are compatible with cookie-based session validation. Mobile tokens now include
+  `createdAt` and `lastAccessed` fields and use TTL, matching the cookie format.
+- **Defensive session extraction**: `getSessionFromRequest` now handles missing
+  `createdAt` field gracefully, providing a default value for backward
+  compatibility with older mobile tokens.
+
 ## [1.0.0] - 2025-11-28
 
 ### Breaking Changes
