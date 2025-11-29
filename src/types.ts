@@ -69,7 +69,6 @@ export type SessionErrorType =
   | "NO_COOKIE"
   | "INVALID_COOKIE"
   | "SESSION_EXPIRED"
-  | "INVALID_TOKEN"
   | "UNKNOWN";
 
 /**
@@ -99,12 +98,4 @@ export interface SessionResult<T = unknown> {
 
   /** Error information if session retrieval failed */
   error?: SessionErrorInfo;
-}
-
-/**
- * Mobile token data - minimal payload sealed in Bearer tokens
- */
-export interface MobileTokenData {
-  /** User's DID */
-  did: string;
 }

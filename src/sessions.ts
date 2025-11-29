@@ -3,7 +3,6 @@ import { sealData, unsealData } from "iron-session";
 import type {
   CookieSessionData,
   Logger,
-  MobileTokenData,
   SessionConfig,
   SessionResult,
 } from "./types.ts";
@@ -29,9 +28,8 @@ const noopLogger: Logger = {
 /**
  * Framework-agnostic session manager using Iron Session.
  *
- * Handles encrypted session cookies and mobile Bearer tokens
- * for AT Protocol applications. Works with standard Web Request/Response
- * APIs - no framework dependencies.
+ * Handles encrypted session cookies for AT Protocol applications.
+ * Works with standard Web Request/Response APIs - no framework dependencies.
  *
  * @example
  * ```typescript
@@ -222,101 +220,5 @@ export class SessionManager {
    */
   getClearCookieHeader(): string {
     return `${this.cookieName}=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0`;
-  }
-
-  /**
-   * Seal data into a mobile Bearer token.
-   *
-   * Creates a token that is compatible with cookie-based session validation,
-   * so mobile apps can use this token either as a Bearer token or as a cookie value.
-   *
-   * @param data - Data to seal (typically just { did })
-   * @returns Sealed token string
-   */
-  async sealToken(data: MobileTokenData): Promise<string> {
-    // Include createdAt and lastAccessed for cookie compatibility
-    // This allows mobile tokens to work as cookie values
-    const now = Date.now();
-    const sessionData: CookieSessionData = {
-      did: data.did,
-      createdAt: now,
-      lastAccessed: now,
-    };
-    return await sealData(sessionData, {
-      password: this.cookieSecret,
-      ttl: this.sessionTtl,
-    });
-  }
-
-  /**
-   * Unseal a mobile Bearer token.
-   *
-   * @param token - Sealed token string
-   * @returns Unsealed data, or null if invalid
-   */
-  async unsealToken(token: string): Promise<MobileTokenData | null> {
-    try {
-      const data = await unsealData(token, {
-        password: this.cookieSecret,
-      }) as MobileTokenData;
-
-      if (!data?.did) {
-        return null;
-      }
-
-      return data;
-    } catch {
-      return null;
-    }
-  }
-
-  /**
-   * Validate a Bearer token from Authorization header.
-   *
-   * @param authHeader - Authorization header value (e.g., "Bearer xxx")
-   * @returns Session result with token data or error
-   */
-  async validateBearerToken(
-    authHeader: string,
-  ): Promise<SessionResult<MobileTokenData>> {
-    if (!authHeader.startsWith("Bearer ")) {
-      return {
-        data: null,
-        error: {
-          type: "INVALID_TOKEN",
-          message: "Invalid authorization header format",
-        },
-      };
-    }
-
-    const token = authHeader.slice(7);
-    const data = await this.unsealToken(token);
-
-    if (!data) {
-      return {
-        data: null,
-        error: {
-          type: "INVALID_TOKEN",
-          message: "Invalid or expired token",
-        },
-      };
-    }
-
-    return { data };
-  }
-
-  /**
-   * Refresh a mobile Bearer token with new seal.
-   *
-   * @param authHeader - Authorization header with current Bearer token
-   * @returns New sealed token, or null if invalid
-   */
-  async refreshBearerToken(authHeader: string): Promise<string | null> {
-    const result = await this.validateBearerToken(authHeader);
-    if (!result.data) {
-      return null;
-    }
-
-    return await this.sealToken(result.data);
   }
 }

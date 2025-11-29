@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2025-11-29
+
+### Breaking Changes
+
+- **Removed mobile Bearer token support**: The following methods have been
+  removed as they were unused (the Anchor iOS app uses cookie-based auth):
+  - `sealToken()` - Created sealed tokens for mobile Bearer auth
+  - `unsealToken()` - Decoded sealed tokens
+  - `validateBearerToken()` - Validated Authorization headers
+  - `refreshBearerToken()` - Refreshed Bearer tokens
+- **Removed `MobileTokenData` type**: No longer exported
+- **Removed `INVALID_TOKEN` from `SessionErrorType`**: Only cookie-related
+  errors remain
+
+The library now focuses solely on cookie-based session management for web
+applications. Mobile apps should use app-specific endpoints for their OAuth
+flow.
+
 ## [1.0.1] - 2025-11-28
 
 ### Fixed

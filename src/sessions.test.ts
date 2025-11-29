@@ -1,7 +1,7 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { SessionManager } from "./sessions.ts";
 import { ConfigurationError } from "./errors.ts";
-import type { SessionData } from "./types.ts";
+import type { CookieSessionData } from "./types.ts";
 
 const TEST_SECRET = "test-secret-that-is-at-least-32-characters-long";
 const TEST_DID = "did:plc:test123";
@@ -53,7 +53,7 @@ Deno.test("SessionManager - createSession", async (t) => {
   const manager = new SessionManager({ cookieSecret: TEST_SECRET });
 
   await t.step("creates valid Set-Cookie header", async () => {
-    const sessionData: SessionData = {
+    const sessionData: CookieSessionData = {
       did: TEST_DID,
       createdAt: Date.now(),
       lastAccessed: Date.now(),
@@ -75,7 +75,7 @@ Deno.test("SessionManager - createSession", async (t) => {
       cookieName: "custom_session",
     });
 
-    const sessionData: SessionData = {
+    const sessionData: CookieSessionData = {
       did: TEST_DID,
       createdAt: Date.now(),
       lastAccessed: Date.now(),
@@ -153,7 +153,7 @@ Deno.test("SessionManager - getSessionFromRequest", async (t) => {
 
   await t.step("successfully extracts valid session", async () => {
     // First create a valid session cookie
-    const sessionData: SessionData = {
+    const sessionData: CookieSessionData = {
       did: TEST_DID,
       createdAt: Date.now() - 1000,
       lastAccessed: Date.now() - 1000,
@@ -182,7 +182,7 @@ Deno.test("SessionManager - getSessionFromRequest", async (t) => {
   });
 
   await t.step("handles multiple cookies correctly", async () => {
-    const sessionData: SessionData = {
+    const sessionData: CookieSessionData = {
       did: TEST_DID,
       createdAt: Date.now(),
       lastAccessed: Date.now(),
@@ -200,91 +200,5 @@ Deno.test("SessionManager - getSessionFromRequest", async (t) => {
 
     assertExists(result.data);
     assertEquals(result.data.did, TEST_DID);
-  });
-});
-
-Deno.test("SessionManager - mobile token operations", async (t) => {
-  const manager = new SessionManager({ cookieSecret: TEST_SECRET });
-
-  await t.step("sealToken creates valid token", async () => {
-    const token = await manager.sealToken({ did: TEST_DID });
-    assertEquals(typeof token, "string");
-    assertEquals(token.length > 0, true);
-  });
-
-  await t.step("unsealToken recovers data", async () => {
-    const token = await manager.sealToken({ did: TEST_DID });
-    const data = await manager.unsealToken(token);
-
-    assertExists(data);
-    assertEquals(data.did, TEST_DID);
-  });
-
-  await t.step("unsealToken returns null for invalid token", async () => {
-    const data = await manager.unsealToken("invalid_token");
-    assertEquals(data, null);
-  });
-
-  await t.step("unsealToken returns null for wrong secret", async () => {
-    const otherManager = new SessionManager({
-      cookieSecret: "different-secret-that-is-at-least-32-chars",
-    });
-
-    const token = await manager.sealToken({ did: TEST_DID });
-    const data = await otherManager.unsealToken(token);
-
-    assertEquals(data, null);
-  });
-});
-
-Deno.test("SessionManager - validateBearerToken", async (t) => {
-  const manager = new SessionManager({ cookieSecret: TEST_SECRET });
-
-  await t.step("returns error for invalid header format", async () => {
-    const result = await manager.validateBearerToken("Basic xxx");
-
-    assertEquals(result.data, null);
-    assertEquals(result.error?.type, "INVALID_TOKEN");
-    assertEquals(result.error?.message, "Invalid authorization header format");
-  });
-
-  await t.step("returns error for invalid token", async () => {
-    const result = await manager.validateBearerToken("Bearer invalid_token");
-
-    assertEquals(result.data, null);
-    assertEquals(result.error?.type, "INVALID_TOKEN");
-  });
-
-  await t.step("successfully validates valid token", async () => {
-    const token = await manager.sealToken({ did: TEST_DID });
-    const result = await manager.validateBearerToken(`Bearer ${token}`);
-
-    assertExists(result.data);
-    assertEquals(result.data.did, TEST_DID);
-    assertEquals(result.error, undefined);
-  });
-});
-
-Deno.test("SessionManager - refreshBearerToken", async (t) => {
-  const manager = new SessionManager({ cookieSecret: TEST_SECRET });
-
-  await t.step("returns null for invalid token", async () => {
-    const result = await manager.refreshBearerToken("Bearer invalid");
-    assertEquals(result, null);
-  });
-
-  await t.step("returns new token for valid token", async () => {
-    const originalToken = await manager.sealToken({ did: TEST_DID });
-    const newToken = await manager.refreshBearerToken(
-      `Bearer ${originalToken}`,
-    );
-
-    assertExists(newToken);
-    assertEquals(typeof newToken, "string");
-
-    // New token should be valid and contain same DID
-    const data = await manager.unsealToken(newToken);
-    assertExists(data);
-    assertEquals(data.did, TEST_DID);
   });
 });

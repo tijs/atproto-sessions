@@ -30,13 +30,3 @@ export class CookieError extends SessionError {
     this.name = "CookieError";
   }
 }
-
-/**
- * Error thrown when mobile token operations fail
- */
-export class TokenError extends SessionError {
-  constructor(message: string) {
-    super(message, "TOKEN_ERROR");
-    this.name = "TokenError";
-  }
-}

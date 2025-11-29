@@ -3,7 +3,7 @@
  *
  * Framework-agnostic session management for AT Protocol applications.
  *
- * Provides encrypted session cookies and mobile Bearer tokens using Iron Session.
+ * Provides encrypted session cookies using Iron Session.
  * Works with standard Web Request/Response APIs - no framework dependencies.
  *
  * @example
@@ -31,8 +31,8 @@ export { SessionManager } from "./src/sessions.ts";
 
 // Types
 export type {
+  CookieSessionData,
   Logger,
-  MobileTokenData,
   SessionConfig,
   SessionData,
   SessionErrorInfo,
@@ -41,9 +41,4 @@ export type {
 } from "./src/types.ts";
 
 // Errors
-export {
-  ConfigurationError,
-  CookieError,
-  SessionError,
-  TokenError,
-} from "./src/errors.ts";
+export { ConfigurationError, CookieError, SessionError } from "./src/errors.ts";
