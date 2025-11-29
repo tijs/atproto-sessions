@@ -221,4 +221,32 @@ export class SessionManager {
   getClearCookieHeader(): string {
     return `${this.cookieName}=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0`;
   }
+
+  /**
+   * Create a sealed token for mobile OAuth callback.
+   *
+   * Used by mobile apps that complete OAuth in a WebView.
+   * The token is passed back to the app via URL scheme redirect.
+   * The app can then use this token as a cookie for authenticated requests.
+   *
+   * @param data - Token data containing the user's DID
+   * @returns Sealed token string
+   *
+   * @example
+   * ```typescript
+   * const token = await sessions.sealToken({ did: "did:plc:abc123" });
+   * // Redirect to: myapp://auth-callback?session_token=<token>&did=...
+   * ```
+   */
+  async sealToken(data: { did: string }): Promise<string> {
+    const tokenData: CookieSessionData = {
+      did: data.did,
+      createdAt: Date.now(),
+      lastAccessed: Date.now(),
+    };
+    return await sealData(tokenData, {
+      password: this.cookieSecret,
+      ttl: this.sessionTtl,
+    });
+  }
 }

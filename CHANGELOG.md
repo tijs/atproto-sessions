@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-11-29
+
+### Added
+
+- **Restored `sealToken()` method**: This method is needed for mobile OAuth
+  flows where the app opens a WebView for authentication. After OAuth completes,
+  the callback redirects to the app's URL scheme with a sealed token that the
+  app can use as a session cookie.
+
+Note: This does NOT restore `unsealToken()`, `validateBearerToken()`, or
+`refreshBearerToken()` as those are genuinely unused - mobile apps use
+cookie-based auth for API calls.
+
 ## [2.0.0] - 2025-11-29
 
 ### Breaking Changes
