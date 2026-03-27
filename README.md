@@ -97,6 +97,15 @@ const newToken = await sessions.refreshBearerToken(`Bearer ${oldToken}`);
 - `validateBearerToken(authHeader)` - Validate Authorization header
 - `refreshBearerToken(authHeader)` - Refresh Bearer token
 
+## Related Packages
+
+- [@tijs/atproto-oauth](https://github.com/tijs/atproto-oauth) -
+  Framework-agnostic OAuth integration for AT Protocol applications
+- [@tijs/atproto-storage](https://github.com/tijs/atproto-storage) - Storage
+  implementations
+- [@tijs/oauth-client-deno](https://github.com/tijs/oauth-client-deno) - AT
+  Protocol OAuth client
+
 ## License
 
 MIT
