@@ -6,7 +6,7 @@
   "exports": "./mod.ts",
   "publish": {
     "include": ["mod.ts", "src/**/*.ts", "README.md", "LICENSE"],
-    "exclude": ["**/*.test.ts"]
+    "exclude": ["**/*.test.ts", "npm/", "_build_npm.ts"]
   },
   "imports": {
     "iron-session": "npm:iron-session@8.0.4",
@@ -22,6 +22,7 @@
     "fmt": "deno fmt",
     "lint": "deno lint",
     "quality": "deno fmt && deno lint && deno check mod.ts",
-    "ci": "deno task quality && deno task test"
+    "ci": "deno task quality && deno task test",
+    "build:npm": "deno run -A _build_npm.ts"
   }
 }

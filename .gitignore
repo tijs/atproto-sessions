@@ -26,3 +26,6 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# npm build output
+npm/
