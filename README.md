@@ -2,6 +2,7 @@
 
 [![Test](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml/badge.svg)](https://github.com/tijs/atproto-sessions/actions/workflows/test.yml)
 [![JSR](https://jsr.io/badges/@tijs/atproto-sessions)](https://jsr.io/@tijs/atproto-sessions)
+[![npm](https://img.shields.io/npm/v/@tijs/atproto-sessions)](https://www.npmjs.com/package/@tijs/atproto-sessions)
 
 Framework-agnostic session management for AT Protocol applications.
 
@@ -11,6 +12,10 @@ Works with standard Web Request/Response APIs - no framework dependencies.
 ## Installation
 
 ```bash
+# npm
+npm install @tijs/atproto-sessions
+
+# Deno
 deno add jsr:@tijs/atproto-sessions
 ```
 
