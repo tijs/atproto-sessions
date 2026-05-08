@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-05-08
+
+### Changed
+
+- **CI**: Split publish into `jsr-publish.yml` and `npm-publish.yml` with npm
+  trusted publishing (OIDC, no static token). Upgrade to `actions/checkout@v5`,
+  `setup-node@v6`, Node 24.
+
 ## [2.1.0] - 2025-11-29
 
 ### Added
